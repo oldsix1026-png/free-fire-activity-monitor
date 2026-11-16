@@ -1,0 +1,20 @@
+import React,{useMemo,useState} from 'react';
+import {analyze,trendRows,taskTrendRows,visibleEvidence,RULES} from './engine.mjs';
+import {RatioChart,TrendChart,Icon} from './visuals.jsx';
+import {GlassTabs,PlatformHeading} from './platform-ui.jsx';
+
+export default function PerformanceView({data,filters,asOf,selectedTaskId,onTask,onInspect}){
+ const result=useMemo(()=>analyze(data,filters,asOf),[data,filters,asOf]);
+ const [activeMetric,setActiveMetric]=useState('experience'),task=result.tasks.find(t=>t.id===selectedTaskId)||result.worst;
+ const trends=useMemo(()=>trendRows(data,filters,asOf),[data,filters,asOf]);
+ const taskTrends=useMemo(()=>taskTrendRows(data,filters,asOf,task.id),[data,filters,asOf,task.id]);
+ const ex=useMemo(()=>visibleEvidence(data,result.experiences,asOf),[data,result,asOf]),re=useMemo(()=>visibleEvidence(data,result.repeats,asOf),[data,result,asOf]),te=useMemo(()=>visibleEvidence(data,task.rows,asOf),[data,task,asOf]);
+ const jump=id=>{setActiveMetric(id);document.getElementById('pf-metric-'+id)?.scrollIntoView({behavior:'smooth',block:'start'});};
+ const suffix=data.activity.id;
+ return <div className="pf-performance">
+  <div className="pf-metric-jump"><GlassTabs label="指标目录" value={activeMetric} onChange={jump} items={[{id:'experience',label:'01 有效体验'},{id:'task',label:'02 任务超时'},{id:'repeat',label:'03 再次体验'}]}/></div>
+  <section id="pf-metric-experience" className="pf-metric-chapter rose"><PlatformHeading number="01" title="有效体验转化率"><button className="ff-action" onClick={()=>onInspect({type:'experience'})}>查看玩家<Icon name="arrow" size={16}/></button></PlatformHeading><div className="pf-performance-grid"><RatioChart id={'platform-experience-share-'+suffix} title="有效体验占比" metric={result.experience} evidence={ex} labels={['已有效体验','未有效体验']} onSelect={outcome=>onInspect({type:'experience',outcome})}/><TrendChart id={'platform-experience-trend-'+suffix} title="有效体验 · 按曝光日期" rows={trends} evidence={ex} measure="experienceRate" label="有效体验转化率" thresholdField="experienceThresholdRate" threshold={RULES.experience} height={266} onPoint={row=>onInspect({type:'experience',extraFilters:{day:row.day}})}/></div></section>
+  <section id="pf-metric-task" className="pf-metric-chapter sand"><PlatformHeading number="02" title="任务超时未完成率"><button className="ff-action" onClick={()=>onInspect({type:'task',taskId:task.id})}>查看玩家<Icon name="arrow" size={16}/></button></PlatformHeading><div className="pf-inline-control"><label>观测任务<select aria-label="数据表现观测任务" value={task.id} onChange={e=>onTask(e.target.value)}>{result.tasks.map(t=><option key={t.id} value={t.id}>{data.activity.typeKey==='daily'?`第 ${t.unlockDay} 天` :t.id} · {t.name}</option>)}</select></label></div><div className="pf-performance-grid"><RatioChart id={'platform-task-share-'+suffix} title={task.id+' 超时占比'} metric={task.metric} evidence={te} labels={['超时玩家','按时完成']} onSelect={outcome=>onInspect({type:'task',taskId:task.id,outcome})}/><TrendChart id={'platform-task-trend-'+suffix} title={task.id+' 超时率 · 按解锁日期'} rows={taskTrends} evidence={te} measure="blockedRate" label="任务超时未完成率" thresholdField="blockedThresholdRate" threshold={RULES.blocked} height={266} onPoint={row=>onInspect({type:'task',taskId:task.id,extraFilters:{day:row.day}})}/></div></section>
+  <section id="pf-metric-repeat" className="pf-metric-chapter lilac"><PlatformHeading number="03" title="24 小时再次体验率"><button className="ff-action" onClick={()=>onInspect({type:'repeat'})}>查看玩家<Icon name="arrow" size={16}/></button></PlatformHeading><div className="pf-performance-grid"><RatioChart id={'platform-repeat-share-'+suffix} title="再次体验占比" metric={result.repeat} evidence={re} labels={['已再次体验','未再次体验']} onSelect={outcome=>onInspect({type:'repeat',outcome})}/><TrendChart id={'platform-repeat-trend-'+suffix} title="再次体验 · 按首次体验日期" rows={trends} evidence={re} measure="repeatRate" label="再次体验率" thresholdField="repeatThresholdRate" threshold={RULES.repeat} height={266} onPoint={row=>onInspect({type:'repeat',extraFilters:{day:row.day}})}/></div></section>
+ </div>;
+}

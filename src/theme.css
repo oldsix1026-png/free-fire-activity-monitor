@@ -1,0 +1,8 @@
+:root {
+ color-scheme:light;--adaptive-theme:0;--font-sans-default:"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif;--font-sans:var(--font-sans-default);
+ --background:#f8f6f9;--dashboard-background:#f8f6f9;--surface:#fff;--surface-raised:#fff;--muted:#f5eef3;--control:#fff;--control-hover:#f3edf3;--interaction-hover:#fff2f5;--interaction-active:#fbe5eb;
+ --text:#24272e;--secondary:#69717d;--border:#e7e9ee;--border-strong:#d5dae2;--accent:#c9233f;--positive:#527967;--negative:#c9233f;
+ --chart-1:#c9233f;--chart-2:#e16b7e;--chart-3:#edb5bf;--chart-4:#7b8796;--chart-5:#e8eaee;--chart-6:#b4bcc7;--chart-7:#d94c65;--chart-8:#a2a8b0;
+ --chart-neutral-fill:#f7f8fa;--ranked-list-fill:#fce5eb;--ranked-list-fill-hover:#f5c7d2;--movement-positive:#527967;--movement-negative:#c9233f;--movement-total:#69717d;
+ --card-radius:12px;--data-card-radius:12px;--data-card-background:#fff;--control-radius:7px;--mark-radius:4;--card-shadow:0 3px 12px #1e293b04;--shadow:0 8px 25px #25304714;--data-app-chrome-background:#fff;--data-app-chrome-text:#444e5c;
+}
