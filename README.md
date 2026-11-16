@@ -6,6 +6,8 @@
 
 GitHub 仓库：https://github.com/oldsix1026-png/free-fire-activity-monitor
 
+在线体验：https://oldsix1026-png.github.io/free-fire-activity-monitor/
+
 网站文件已预构建在 `dist/`，下载仓库后直接运行下方命令即可查看，无须安装依赖。
 
 本机预览：http://127.0.0.1:4317 。如需重启，在项目目录运行：
@@ -57,3 +59,16 @@ node ./verify-alerts.mjs
 界面代码在 `src/content/dashboard/`，原始模拟数据在 `src/data.json`，预览构建在 `dist/`。`generate-platform.mjs` 负责五活动数据生成，数据字典见 `PLATFORM-DATA.md`。重新生成后需要重建；最终交付前将数据快照的 `buildStatus` 设为 `complete`。
 
 共享 Data 运行时、来源菜单和编辑能力保持不变。
+
+## GitHub 部署
+
+`main` 保存完整项目，`gh-pages` 保存 `dist/` 的预构建网站。GitHub Pages 使用 `gh-pages` 分支根目录发布。
+
+更新网站内容并重新构建后，提交到 `main`，再执行：
+
+```powershell
+git push origin main
+git -c core.compression=0 -c pack.compression=0 subtree push --prefix dist origin gh-pages
+```
+
+模拟数据快照约 62 MiB，首次加载需下载完整数据。个人复盘 HTML 单独保存在本地，不包含在该公开仓库中。
